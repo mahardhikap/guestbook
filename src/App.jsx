@@ -28,7 +28,6 @@ const App = () => {
       if (response.status === 200) {
         loadChatHistory();
         setMessageInput('');
-        setUsernameInput('');
       } else {
         console.error('Failed to send message:', response.statusText);
         alert('Please fill username and message!');
@@ -46,6 +45,17 @@ const App = () => {
     } catch (error) {
       console.error('Error fetching chat history', error);
     }
+  };
+
+  const handleChangeUsername = (e) => {
+    const inputValue = e.target.value;
+    const limitedInput = inputValue.slice(0, 50);
+    setUsernameInput(limitedInput);
+  };
+  const handleChangeMessage = (e) => {
+    const inputValue = e.target.value;
+    const limitedInput = inputValue.slice(0, 150);
+    setMessageInput(limitedInput);
   };
 
   useEffect(() => {
@@ -81,34 +91,39 @@ const App = () => {
   }, [socket]);
 
   return (
-    <div className="w-1/2 container mx-auto">
-      <div className="flex flex-col w-full justify-center h-screen">
+    <div className="w-full p-2 sm:w-1/2 container mx-auto">
+      <div className="flex flex-col w-full justify-center">
         <div>
           <div className="text-center my-5 font-bold text-blue-500">
             GUEST BOOK
           </div>
+          <hr className="border-2 mb-4 mx-auto w-1/2" />
           <ul>
             {messages.map((msg, index) => (
-              <li key={index}>
+              <li
+                key={index}
+                className="bg-gray-50 p-1 rounded-lg my-2 shadow-sm"
+              >
                 <Message username={msg.username} text={msg.message} />
               </li>
             ))}
           </ul>
         </div>
-        <div className="flex flex-col gap-3 my-3">
+        <hr className="border-2 my-4 mx-auto w-1/2" />
+        <div className="flex flex-col gap-2">
           <input
             type="text"
             value={usernameInput}
-            onChange={(e) => setUsernameInput(e.target.value)}
-            placeholder="username"
-            className="p-3 rounded-lg border-2"
+            onChange={handleChangeUsername}
+            placeholder="username (max. 50 characters)"
+            className="p-3 rounded-lg border"
           />
-          <input
+          <textarea
             type="text"
             value={messageInput}
-            onChange={(e) => setMessageInput(e.target.value)}
-            placeholder="message"
-            className="p-3 rounded-lg border-2"
+            onChange={handleChangeMessage}
+            placeholder="message (max. 150 characters)"
+            className="p-3 rounded-lg border h-20"
           />
           <button
             className="bg-blue-600 rounded-lg p-3 font-bold text-white"
