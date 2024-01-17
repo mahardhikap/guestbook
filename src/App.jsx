@@ -99,22 +99,22 @@ const App = () => {
   }, [messages]);
 
   return (
-    <div className="w-full p-2 sm:w-1/2 container mx-auto h-screen">
+    <div className="w-full p-2 sm:w-1/2 container mx-auto">
       <div className="flex flex-col w-full justify-center">
         <div>
           <div className="text-center my-5 font-bold text-blue-500">
             GUEST BOOK
           </div>
           <hr className="border-2 mb-4 mx-auto w-1/2" />
-          <ul ref={messagesContainerRef} className='h-60 overflow-y-auto	'>
-            {messages.map((msg, index) => (
+          <ul ref={messagesContainerRef} className='h-96 overflow-y-auto	'>
+            {messages && messages.length > 0 ? messages.map((msg, index) => (
               <li
                 key={index}
                 className="bg-gray-50 p-1 rounded-lg my-2 shadow-sm"
               >
                 <Message username={msg.username} text={msg.message} />
               </li>
-            ))}
+            )) : <div className='flex justify-center items-center h-full'><div className="bg-gray-50 p-1 rounded-lg my-2 shadow-sm text-blue-300">Be first send message!</div></div>}
           </ul>
         </div>
         <hr className="border-2 my-4 mx-auto w-1/2" />
