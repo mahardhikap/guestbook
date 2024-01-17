@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 import Message from './Message';
 import axios from 'axios'; // Import Axios
@@ -9,6 +9,7 @@ const App = () => {
   const [messages, setMessages] = useState([]);
   const [messageInput, setMessageInput] = useState('');
   const [usernameInput, setUsernameInput] = useState('');
+  const messagesContainerRef = useRef(null);
 
   const sendMessage = async () => {
     try {
@@ -90,15 +91,22 @@ const App = () => {
     };
   }, [socket]);
 
+  useEffect(() => {
+    // Scroll to the bottom when messages change
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   return (
-    <div className="w-full p-2 sm:w-1/2 container mx-auto">
+    <div className="w-full p-2 sm:w-1/2 container mx-auto h-screen">
       <div className="flex flex-col w-full justify-center">
         <div>
           <div className="text-center my-5 font-bold text-blue-500">
             GUEST BOOK
           </div>
           <hr className="border-2 mb-4 mx-auto w-1/2" />
-          <ul>
+          <ul ref={messagesContainerRef} className='h-60 overflow-y-auto	'>
             {messages.map((msg, index) => (
               <li
                 key={index}
