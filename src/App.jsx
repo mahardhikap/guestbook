@@ -63,7 +63,7 @@ const App = () => {
 
   const handleChangeUsername = (e) => {
     const inputValue = e.target.value;
-    const limitedInput = inputValue.slice(0, 50);
+    const limitedInput = inputValue.slice(0, 25);
     setUsernameInput(limitedInput);
   };
 
@@ -117,7 +117,7 @@ const App = () => {
     <div className="w-full p-2 sm:w-1/2 container mx-auto">
       <div className="flex flex-col w-full justify-center">
         <div>
-          <div className="text-center my-5 font-bold text-gray-500">
+          <div className="text-center my-2 font-bold text-gray-600">
             GUEST BOOK
           </div>
           <hr className="border-2 mb-4 mx-auto w-1/2" />
@@ -126,9 +126,30 @@ const App = () => {
               messages.map((msg, index) => (
                 <li
                   key={index}
-                  className="bg-gray-50 p-1 rounded-lg my-2 shadow-sm"
+                  className="bg-neutral-50 p-1 rounded-lg my-2 shadow-sm"
                 >
-                  <Message username={msg.username} text={msg.message} />
+                  <Message
+                    username={msg.username}
+                    text={msg.message}
+                    date={new Date(msg.created_at).toLocaleString('id-ID', {
+                      day: 'numeric',
+                      month: 'numeric',
+                      year: 'numeric',
+                      // hour: 'numeric',
+                      // minute: 'numeric',
+                      // second: 'numeric',
+                      timeZone: 'Asia/Jakarta',
+                    })}
+                    time={new Date(msg.created_at).toLocaleString('id-ID', {
+                      // day: 'numeric',
+                      // month: 'numeric',
+                      // year: 'numeric',
+                      hour: 'numeric',
+                      minute: 'numeric',
+                      // second: 'numeric',
+                      timeZone: 'Asia/Jakarta',
+                    })}
+                  />
                 </li>
               ))
             ) : (
@@ -146,26 +167,24 @@ const App = () => {
             type="text"
             value={usernameInput}
             onChange={handleChangeUsername}
-            placeholder="username (max. 50 characters)"
-            className="p-3 rounded-lg border"
+            placeholder="username (max. 25 characters)"
+            className="p-3 rounded-lg border text-sm bg-neutral-50"
           />
           <textarea
             type="text"
             value={messageInput}
             onChange={handleChangeMessage}
             placeholder="message (max. 150 characters)"
-            className="p-3 rounded-lg border h-20"
+            className="p-3 rounded-lg border h-20 text-sm bg-neutral-50"
           />
           <button
-            className={`bg-gray-600 rounded-lg p-3 font-bold text-white ${
+            className={`bg-gray-600 rounded-lg p-3 font-bold text-white text-sm mb-2 ${
               loading ? 'opacity-50 cursor-not-allowed' : ''
             }`}
             onClick={sendMessage}
             disabled={loading} // Disable the button when loading is true
           >
-            {loading
-              ? `Wait ${countdown}s`
-              : 'Send'}
+            {loading ? `Wait ${countdown}s` : 'Send'}
           </button>
         </div>
       </div>
