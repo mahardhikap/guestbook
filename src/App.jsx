@@ -118,7 +118,7 @@ const App = () => {
       <div className="flex flex-col w-full justify-center">
         <div>
           <div className="text-center my-2 font-bold text-gray-600">
-            GUEST BOOK
+            SEND TO ME
           </div>
           <hr className="border-2 mb-4 mx-auto w-1/2" />
           <ul ref={messagesContainerRef} className="h-96 overflow-y-auto">
@@ -187,6 +187,7 @@ const App = () => {
             {loading ? `Wait ${countdown}s` : 'Send'}
           </button>
         </div>
+        <div className='text-xs font-small mt-5 text-center p-0 m-0'>&copy;2024 Mahardhika</div>
       </div>
     </div>
   );
