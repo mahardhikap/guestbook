@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 import Message from './Message';
-import axios from 'axios'; // Import Axios
+import axios from 'axios';
+
 let url = import.meta.env.VITE_BASE_URL;
 
 const App = () => {
@@ -9,6 +10,8 @@ const App = () => {
   const [messages, setMessages] = useState([]);
   const [messageInput, setMessageInput] = useState('');
   const [usernameInput, setUsernameInput] = useState('');
+  const [loading, setLoading] = useState(false); // Loading state
+  const [countdown, setCountdown] = useState(10); // Countdown timer
   const messagesContainerRef = useRef(null);
 
   const sendMessage = async () => {
@@ -29,6 +32,16 @@ const App = () => {
       if (response.status === 200) {
         loadChatHistory();
         setMessageInput('');
+        // Set loading state back to false after completing the request
+        setLoading(true);
+        setCountdown(10);
+        const timerId = setInterval(() => {
+          setCountdown((prevCountdown) => prevCountdown - 1);
+        }, 1000);
+        setTimeout(() => {
+          setLoading(false);
+          clearInterval(timerId);
+        }, 10000);
       } else {
         console.error('Failed to send message:', response.statusText);
         alert('Please fill username and message!');
@@ -53,6 +66,7 @@ const App = () => {
     const limitedInput = inputValue.slice(0, 50);
     setUsernameInput(limitedInput);
   };
+
   const handleChangeMessage = (e) => {
     const inputValue = e.target.value;
     const limitedInput = inputValue.slice(0, 150);
@@ -94,7 +108,8 @@ const App = () => {
   useEffect(() => {
     // Scroll to the bottom when messages change
     if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight;
     }
   }, [messages]);
 
@@ -102,19 +117,27 @@ const App = () => {
     <div className="w-full p-2 sm:w-1/2 container mx-auto">
       <div className="flex flex-col w-full justify-center">
         <div>
-          <div className="text-center my-5 font-bold text-blue-500">
+          <div className="text-center my-5 font-bold text-gray-500">
             GUEST BOOK
           </div>
           <hr className="border-2 mb-4 mx-auto w-1/2" />
-          <ul ref={messagesContainerRef} className='h-96 overflow-y-auto	'>
-            {messages && messages.length > 0 ? messages.map((msg, index) => (
-              <li
-                key={index}
-                className="bg-gray-50 p-1 rounded-lg my-2 shadow-sm"
-              >
-                <Message username={msg.username} text={msg.message} />
-              </li>
-            )) : <div className='flex justify-center items-center h-full'><div className="bg-gray-50 p-1 rounded-lg my-2 shadow-sm text-blue-300">Be first send message!</div></div>}
+          <ul ref={messagesContainerRef} className="h-96 overflow-y-auto">
+            {messages && messages.length > 0 ? (
+              messages.map((msg, index) => (
+                <li
+                  key={index}
+                  className="bg-gray-50 p-1 rounded-lg my-2 shadow-sm"
+                >
+                  <Message username={msg.username} text={msg.message} />
+                </li>
+              ))
+            ) : (
+              <div className="flex justify-center items-center h-full">
+                <div className="bg-gray-50 p-1 rounded-lg my-2 shadow-sm text-blue-300">
+                  Be the first to send a message!
+                </div>
+              </div>
+            )}
           </ul>
         </div>
         <hr className="border-2 my-4 mx-auto w-1/2" />
@@ -134,10 +157,15 @@ const App = () => {
             className="p-3 rounded-lg border h-20"
           />
           <button
-            className="bg-blue-600 rounded-lg p-3 font-bold text-white"
+            className={`bg-gray-600 rounded-lg p-3 font-bold text-white ${
+              loading ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
             onClick={sendMessage}
+            disabled={loading} // Disable the button when loading is true
           >
-            Send
+            {loading
+              ? `Wait ${countdown}s`
+              : 'Send'}
           </button>
         </div>
       </div>
